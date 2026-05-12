@@ -1,8 +1,8 @@
 def solicitar_datos():
     """Solicita la entrada del usuario por consola."""
-    usuario = input("Ingrese su nombre de usuario: ")
-    contraseña = input("Ingrese su contraseña: ")
-    return usuario, contraseña
+    us = input("Ingrese su nombre de usuario: ")
+    cont = input("Ingrese su contraseña: ")
+    return us, cont
 
 def validar_credenciales(user, pas):
     """
