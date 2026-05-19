@@ -4,10 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-// Clase Usuario
 class Usuario {
 
-    // ENCAPSULAMIENTO
     private String nombreUsuario;
     private String clave;
 
@@ -16,17 +14,16 @@ class Usuario {
         this.clave = clave;
     }
 
-    // ABSTRACCIÓN
-    public boolean validarAcceso(String usuarioIngresado, String claveIngresada) {
+    public boolean validarAcceso(String usuarioIngresado,
+                                 String claveIngresada) {
+
         return nombreUsuario.equals(usuarioIngresado) &&
                clave.equals(claveIngresada);
     }
 }
 
-// Clase Cliente
 class Cliente {
 
-    // ENCAPSULAMIENTO
     private String nombre;
     private String cedula;
     private String telefono;
@@ -50,11 +47,12 @@ class Cliente {
     }
 }
 
-// Clase Principal
 public class MainV2 {
 
     static ArrayList<Usuario> listaUsuarios = new ArrayList<>();
     static ArrayList<Cliente> clientes = new ArrayList<>();
+
+    static String usuarioActual = "";
 
     public static void main(String[] args) {
 
@@ -65,7 +63,6 @@ public class MainV2 {
         ventanaInicio();
     }
 
-    // Ventana Principal
     public static void ventanaInicio() {
 
         JFrame ventana = new JFrame("Sistema");
@@ -94,6 +91,23 @@ public class MainV2 {
 
         btnClientes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                if (usuarioActual.equals("")) {
+
+                    JOptionPane.showMessageDialog(ventana,
+                            "Debe iniciar sesión");
+
+                    return;
+                }
+
+                if (!usuarioActual.equals("admin")) {
+
+                    JOptionPane.showMessageDialog(ventana,
+                            "Solo el administrador puede registrar clientes");
+
+                    return;
+                }
+
                 ventana.dispose();
                 ventanaClientes();
             }
@@ -101,6 +115,15 @@ public class MainV2 {
 
         btnVerClientes.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                if (usuarioActual.equals("")) {
+
+                    JOptionPane.showMessageDialog(ventana,
+                            "Debe iniciar sesión");
+
+                    return;
+                }
+
                 mostrarClientes();
             }
         });
@@ -108,7 +131,6 @@ public class MainV2 {
         ventana.setLocationRelativeTo(null);
         ventana.setVisible(true);
     }
-
 
     public static void ventanaLogin() {
 
@@ -137,22 +159,44 @@ public class MainV2 {
         ingresar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                String usuarioIngresado = campoUsuario.getText();
-                String claveIngresada = new String(campoContrasena.getPassword());
+                String usuarioIngresado =
+                        campoUsuario.getText().trim();
+
+                String claveIngresada =
+                        new String(campoContrasena.getPassword());
+
+                if (usuarioIngresado.isEmpty() ||
+                    claveIngresada.isEmpty()) {
+
+                    JOptionPane.showMessageDialog(login,
+                            "Debe completar todos los campos");
+
+                    return;
+                }
 
                 boolean acceso = false;
 
                 for (Usuario u : listaUsuarios) {
-                    if (u.validarAcceso(usuarioIngresado, claveIngresada)) {
+
+                    if (u.validarAcceso(usuarioIngresado,
+                            claveIngresada)) {
+
                         acceso = true;
+                        usuarioActual = usuarioIngresado;
                         break;
                     }
                 }
 
                 if (acceso) {
+
                     JOptionPane.showMessageDialog(login,
                             "Usuario ingresado correctamente");
+
+                    login.dispose();
+                    ventanaInicio();
+
                 } else {
+
                     JOptionPane.showMessageDialog(login,
                             "Error al ingresar");
                 }
@@ -170,12 +214,11 @@ public class MainV2 {
         login.setVisible(true);
     }
 
-
     public static void ventanaClientes() {
 
         JFrame clientesVentana = new JFrame("Registro Clientes");
         clientesVentana.setSize(450, 350);
-        clientesVentana.setLayout(new GridLayout(6, 2, 10, 10));
+        clientesVentana.setLayout(new GridLayout(5, 2, 10, 10));
 
         JLabel lblNombre = new JLabel("Nombre:");
         JTextField txtNombre = new JTextField();
@@ -187,7 +230,6 @@ public class MainV2 {
         JTextField txtTelefono = new JTextField();
 
         JButton btnRegistrar = new JButton("Registrar Cliente");
-        JButton btnMostrar = new JButton("Mostrar Clientes");
         JButton btnVolver = new JButton("Volver");
 
         clientesVentana.add(lblNombre);
@@ -200,33 +242,105 @@ public class MainV2 {
         clientesVentana.add(txtTelefono);
 
         clientesVentana.add(btnRegistrar);
-        clientesVentana.add(btnMostrar);
-
         clientesVentana.add(btnVolver);
 
         btnRegistrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                String nombre = txtNombre.getText();
-                String cedula = txtCedula.getText();
-                String telefono = txtTelefono.getText();
+                String nombre = txtNombre.getText().trim();
+                String cedula = txtCedula.getText().trim();
+                String telefono = txtTelefono.getText().trim();
 
-                Cliente nuevoCliente = new Cliente(nombre, cedula, telefono);
+                if (nombre.isEmpty() ||
+                    cedula.isEmpty() ||
+                    telefono.isEmpty()) {
+
+                    JOptionPane.showMessageDialog(clientesVentana,
+                            "Todos los campos son obligatorios");
+
+                    return;
+                }
+
+                boolean valido = true;
+
+                for (int i = 0; i < nombre.length(); i++) {
+
+                    char letra = nombre.charAt(i);
+
+                    if (!Character.isLetter(letra) &&
+                        letra != ' ') {
+
+                        valido = false;
+                        break;
+                    }
+                }
+
+                if (!valido) {
+
+                    JOptionPane.showMessageDialog(clientesVentana,
+                            "El nombre solo debe contener letras");
+
+                    return;
+                }
+
+                for (int i = 0; i < cedula.length(); i++) {
+
+                    if (!Character.isDigit(
+                            cedula.charAt(i))) {
+
+                        JOptionPane.showMessageDialog(
+                                clientesVentana,
+                                "La cédula solo debe contener números");
+
+                        return;
+                    }
+                }
+
+                if (cedula.length() != 10) {
+
+                    JOptionPane.showMessageDialog(
+                            clientesVentana,
+                            "La cédula debe tener 10 dígitos");
+
+                    return;
+                }
+
+                for (int i = 0; i < telefono.length(); i++) {
+
+                    if (!Character.isDigit(
+                            telefono.charAt(i))) {
+
+                        JOptionPane.showMessageDialog(
+                                clientesVentana,
+                                "El teléfono solo debe contener números");
+
+                        return;
+                    }
+                }
+
+                if (telefono.length() != 10) {
+
+                    JOptionPane.showMessageDialog(
+                            clientesVentana,
+                            "El teléfono debe tener 10 dígitos");
+
+                    return;
+                }
+
+                Cliente nuevoCliente =
+                        new Cliente(nombre,
+                                cedula,
+                                telefono);
 
                 clientes.add(nuevoCliente);
 
-                JOptionPane.showMessageDialog(clientesVentana,
+                JOptionPane.showMessageDialog(
+                        clientesVentana,
                         "Cliente registrado correctamente");
 
                 txtNombre.setText("");
                 txtCedula.setText("");
                 txtTelefono.setText("");
-            }
-        });
-
-        btnMostrar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mostrarClientes();
             }
         });
 
@@ -241,7 +355,6 @@ public class MainV2 {
         clientesVentana.setVisible(true);
     }
 
-
     public static void mostrarClientes() {
 
         String lista = "";
@@ -251,7 +364,7 @@ public class MainV2 {
             lista += "Nombre: " + c.getNombre() +
                      "\nCédula: " + c.getCedula() +
                      "\nTeléfono: " + c.getTelefono() +
-                     "\n-----------------------------\n";
+                     "\n*******************************n";
         }
 
         if (lista.equals("")) {
