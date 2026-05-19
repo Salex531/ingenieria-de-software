@@ -8,6 +8,12 @@ def solicitar_datos():
     while True:
 
         usuario = input("Ingrese su nombre de usuario: ").strip()
+
+        # Validación usuario vacío
+        if usuario == "":
+            print("\n[ERROR] El nombre de usuario no puede estar vacío.")
+            continue
+
         contraseña = input("Ingrese su contraseña: ")
 
         # Validación contraseña
