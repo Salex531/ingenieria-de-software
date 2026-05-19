@@ -14,8 +14,7 @@ class Usuario {
         this.clave = clave;
     }
 
-    public boolean validarAcceso(String usuarioIngresado,
-                                 String claveIngresada) {
+    public boolean validarAcceso(String usuarioIngresado, String claveIngresada) {
 
         return nombreUsuario.equals(usuarioIngresado) &&
                clave.equals(claveIngresada);
@@ -56,9 +55,9 @@ public class MainV2 {
 
     public static void main(String[] args) {
 
-        listaUsuarios.add(new Usuario("admin", "12345"));
-        listaUsuarios.add(new Usuario("juan", "54321"));
-        listaUsuarios.add(new Usuario("invitado", "4321"));
+        listaUsuarios.add(new Usuario("admin", "admin-1234"));
+        listaUsuarios.add(new Usuario("juan", "juan-1234"));
+        listaUsuarios.add(new Usuario("invitado", "invitado1"));
 
         ventanaInicio();
     }
@@ -198,7 +197,7 @@ public class MainV2 {
                 } else {
 
                     JOptionPane.showMessageDialog(login,
-                            "Error al ingresar");
+                            "Usuario o contraseña incorrecta");
                 }
             }
         });
@@ -324,6 +323,26 @@ public class MainV2 {
                             clientesVentana,
                             "El teléfono debe tener 10 dígitos");
 
+                        return;
+                }
+
+                boolean cedulaRepetida = false;
+
+                for (Cliente c : clientes) {
+
+                    if (c.getCedula().equals(cedula)) {
+
+                        cedulaRepetida = true;
+                        break;
+                    }
+                }
+
+                if (cedulaRepetida) {
+
+                    JOptionPane.showMessageDialog(
+                            clientesVentana,
+                            "Este cliente ya está registrado");
+
                     return;
                 }
 
@@ -364,7 +383,7 @@ public class MainV2 {
             lista += "Nombre: " + c.getNombre() +
                      "\nCédula: " + c.getCedula() +
                      "\nTeléfono: " + c.getTelefono() +
-                     "\n*******************************n";
+                     "\n********************************";
         }
 
         if (lista.equals("")) {
